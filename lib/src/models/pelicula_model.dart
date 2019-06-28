@@ -75,5 +75,14 @@ class Pelicula {
     return 'https://image.tmdb.org/t/p/w500/$posterPath';
   }
 
+  String getBackgroundImg(){
+    if(posterPath == null){
+
+      return 'https://image.shutterstock.com/image-vector/no-image-available-sign-internet-260nw-261719003.jpg';
+
+    }
+    return 'https://image.tmdb.org/t/p/w500/$backdropPath';
+  }
+
 
 }

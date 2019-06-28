@@ -23,12 +23,47 @@ class MovieHorizontal extends StatelessWidget {
 
     return Container(
       height: _screenSize.height * 0.25,
-      child: PageView(
+      child: PageView.builder(
         pageSnapping: false,
+        itemCount:  peliculas.length,
         controller: _pageController,
-        children: _tarjetas(context),
+        itemBuilder: ( context , i ) =>  _tarjeta(context, peliculas[i]),
+
       ),
     );
+  }
+
+
+  Widget _tarjeta(BuildContext context, Pelicula pelicula){
+    final _card = Container(
+        margin: EdgeInsets.only(right: 15.0),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            ClipRRect(
+              borderRadius: BorderRadius.circular(20.0),
+              child: FadeInImage(
+                image: NetworkImage(pelicula.getPosterImg()),
+                placeholder: AssetImage('assets/img/no-image.jpg'),
+                fit: BoxFit.cover,
+                height: 160.0,
+              ),
+            ),
+            Text(
+              pelicula.title, 
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.overline,
+            )
+          ],
+        ),
+      );
+
+      return GestureDetector(
+        child: _card,
+        onTap: (){
+          Navigator.pushNamed(context, 'detalle', arguments: pelicula );
+        },
+      );
   }
 
   List<Widget> _tarjetas(BuildContext context) {
