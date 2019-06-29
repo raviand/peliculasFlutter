@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 
+import 'package:peliculas/src/models/casting_model.dart';
 import 'package:peliculas/src/models/pelicula_model.dart';
 import 'package:http/http.dart' as http;
 
@@ -17,6 +18,10 @@ class PeliculasProvider{
   List<Pelicula> _listaPopulares = new List();
 
   final _popularStream = StreamController<List<Pelicula>>.broadcast();
+
+  Function(List<Pelicula>) get popularesSink => _popularStream.sink.add;
+
+  Stream<List<Pelicula>> get popularesStream => _popularStream.stream;
 
   void disposeStreams(){
     _popularStream?.close();
@@ -75,8 +80,42 @@ class PeliculasProvider{
 
   }
 
-  Function(List<Pelicula>) get popularesSink => _popularStream.sink.add;
+  Future<List<Actor>> getCasting(int idMovie) async{
+    ///movie/{movie_id}/credits
+    final url = Uri.https(_url, '3/movie/$idMovie/credits', {
+      'api_key' : _apiKey,
+      'language' : _languaje,
+    });
 
-  Stream<List<Pelicula>> get popularesStream => _popularStream.stream;
+     final response = await  http.get(url);
+
+    if(response.statusCode == 200){
+
+      final data = json.decode(response.body);
+
+      final actores = Cast.fromJsonList(data['cast']);
+
+      return actores.actores;
+    }
+  }
+
+  Future<List<Pelicula>> buscarPelicula(String query) async{
+        final url = Uri.https(_url, '3/search/movie', {
+      'api_key' : _apiKey,
+      'language' : _languaje,
+      'query' : query
+    });
+
+    final response = await  http.get(url);
+
+    if(response.statusCode == 200){
+
+      final data = json.decode(response.body);
+
+      final peliculas = Peliculas.fromJsonList(data['results']);
+
+      return peliculas.items;
+    }
+  }
 
 }
